@@ -117,9 +117,26 @@ Some related resources:
 - Neo4j python driver:  https://github.com/neo4j/neo4j-python-driver
 
 
+# Step 5 - Nodes ids.
 
+	ID(p) = 9 >>> node_id = "59217552" 
+	ID(p) = 60201 >>> node_id = "82000988"
 
+	The import worked OK, but the internal ids ID(p) are different than p.node_id.
+	The alternative query is possible to use node_id instead:
 
+	MATCH (b {node_id:'59217552'}),(e {node_id:'82000988'}),path=shortestPath((b)-[*]-(e)) RETURN path;
+
+	But it requires full table scan to find the nodes (while the ID(p) does not).
+	Indexing on `node_id` may not help here eithe becasue indexes seem to be only used if a specific lable is requested.
+
+	Nevertheless for this size of data even the queries with full scan run under ~50ms so both options are fine. 
+
+	Another option is to use `--id-type=ACTUAL` option with import tools. This should solve the issue but the ids in extract need
+	to be sorted in increasing order. (But can be done). This may be the best ... (if we are talking about read-only view).
+
+TODO:
+	- ask what it should be.
 
 
 
