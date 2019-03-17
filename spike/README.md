@@ -8,7 +8,7 @@ This is to get a quick working end to end solution including ETL and web service
 
 This seem to work:
 
-	curl -v https://s3-ap-southeast-2.amazonaws.com/stellar-interview/paradise.sql  | mysql -u crypto -p
+	curl -v https://[url-masked]/paradise.sql  | mysql -u crypto -p
 
 Created database `paradise` with the expexted schema.
 
@@ -59,6 +59,7 @@ In principle the following query should return the shortest path (the directed v
 
 
 or (undirected version):
+
 	    MATCH path=shortestPath((b)-[*]-(e))
         WHERE ID(b)=60201 AND ID(e)=9
         RETURN path;
@@ -102,12 +103,13 @@ So the general REST API deisgn will be:
 
 
 Notes:
-	- The path response contains a list of node summaries (not full node) that includes: id, labels, name.
-	- To make the API nice node/node summary responses also include the `uri` to the node (`"uri":"http://127.0.0.1:5000/node/60201"`)
+
+- The path response contains a list of node summaries (not full node) that includes: id, labels, name.
+- To make the API nice node/node summary responses also include the `uri` to the node (`"uri":"http://127.0.0.1:5000/node/60201"`)
 
 TODO:
 	
-	-  in the node `id` and `node_id` are different - need to investigate ...
+-  in the node `id` and `node_id` are different - need to investigate ...
 
 
 Some related resources:
@@ -122,23 +124,19 @@ Some related resources:
 	ID(p) = 9 >>> node_id = "59217552" 
 	ID(p) = 60201 >>> node_id = "82000988"
 
-	The import worked OK, but the internal ids ID(p) are different than p.node_id.
-	The alternative query is possible to use node_id instead:
+The import worked OK, but the internal ids ID(p) are different than p.node_id.
+The alternative query is possible to use node_id instead:
 
 	MATCH (b {node_id:'59217552'}),(e {node_id:'82000988'}),path=shortestPath((b)-[*]-(e)) RETURN path;
 
-	But it requires full table scan to find the nodes (while the ID(p) does not).
-	Indexing on `node_id` may not help here eithe becasue indexes seem to be only used if a specific lable is requested.
+But it requires full table scan to find the nodes (while the ID(p) does not).
+Indexing on `node_id` may not help here eithe becasue indexes seem to be only used if a specific lable is requested.
 
-	Nevertheless for this size of data even the queries with full scan run under ~50ms so both options are fine. 
+Nevertheless for this size of data even the queries with full scan run under ~50ms so both options are fine. 
 
-	Another option is to use `--id-type=ACTUAL` option with import tools. This should solve the issue but the ids in extract need
-	to be sorted in increasing order. (But can be done). This may be the best ... (if we are talking about read-only view).
+Another option is to use `--id-type=ACTUAL` option with import tools. This should solve the issue but the ids in extract need
+to be sorted in increasing order. (But can be done). This may be the best ... (if we are talking about read-only view).
 
 TODO:
-	- ask what it should be.
 
-
-
-
-
+- ask what it should be.

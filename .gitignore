@@ -65,4 +65,11 @@ jrebel.lic
 .*.sw?
 .idea
 
+
+# Others
+
 /bin/
+.cache-main
+.cache-tests
+
+
