@@ -24,6 +24,10 @@ echo "Loading to neo4j db: '${DEST_DB}' from: '${IMPORT_DIR}' using: '${NEO4J_IM
 
 rm -rf "${DEST_DB}"
 
+NODES=$(for i in $IMPORT_DIR/node/*.csv; do echo `basename ${i%.*}`; done)
+
+echo "Importig nodes: ${NODES}"
+
 "${NEO4J_IMPORT}" --into "${DEST_DB}" \
- --nodes "${IMPORT_DIR}/node/entity.csv"
+  $(for n in $NODES; do echo -n " --nodes ${IMPORT_DIR}/node/${n}.csv"; done)  
 
