@@ -25,5 +25,5 @@ echo "Loading to neo4j db: '${DEST_DB}' from: '${IMPORT_DIR}' using: '${NEO4J_IM
 rm -rf "${DEST_DB}"
 
 "${NEO4J_IMPORT}" --into "${DEST_DB}" \
- --nodes:entity "${IMPORT_DIR}/node/entity.csv"
+ --nodes "${IMPORT_DIR}/node/entity.csv"
 

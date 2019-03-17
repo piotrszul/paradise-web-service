@@ -16,8 +16,17 @@ Created database `paradise` with the expexted schema.
 
 Validate the idea of using `mysql` to `SELECT ... INTO OUTFILE` to export csv data from mysql to be imported by `neo4j-import`.
 
-Some relevat resources: 
+The sql database seem to be an export from neo4j, so just trying to recreate the same schema after import seem to be reasonable.
+The only question is what to use as the source of label(s) for graph nodes. One way would be to use the source table (e.g. nodes.officer -> LABEL:officer).
+Another is to use the `labels(n)` field. Since all of them are JSON_ARRAYS od lenght 1 it should be easy to extrect that in SQL, as this is potentially mode flexible.
+Another consideration is uniquness of the IDs. In out case all the nodes.* have unique ids so there is not need to use namespaces in neo4j.
 
+With these assumptions should be able to extrect all nodes in one format and import with this header:
+
+	node_id:ID, :LABEL, valid_until, name ... 
+
+
+Some releant resources: 
 - http://www.mysqltutorial.org/mysql-export-table-to-csv/
 - https://neo4j.com/developer/guide-import-csv/#_super_fast_batch_importer_for_huge_datasets
 - https://neo4j.com/docs/operations-manual/current/tutorial/import-tool/
