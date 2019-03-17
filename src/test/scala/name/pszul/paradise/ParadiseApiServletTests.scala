@@ -1,6 +1,7 @@
-package name.pszul
+package name.pszul.paradise
 
 import org.scalatra.test.scalatest._
+import org.scalactic.source.Position.apply
 
 class ParadiseApiServletTests extends ScalatraFunSuite {
 

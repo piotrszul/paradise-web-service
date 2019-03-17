@@ -1,4 +1,4 @@
-import name.pszul._
+import name.pszul.paradise._
 import org.scalatra._
 import javax.servlet.ServletContext
 

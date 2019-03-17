@@ -1,4 +1,4 @@
-package name.pszul
+package name.pszul.paradise
 
 import org.scalatra._
 
