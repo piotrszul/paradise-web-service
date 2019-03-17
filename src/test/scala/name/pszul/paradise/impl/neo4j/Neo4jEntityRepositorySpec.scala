@@ -11,13 +11,15 @@ import name.pszul.paradise.domain.Entity
 
 class Neo4jEntityRepositorySpec extends FlatSpec with BeforeAndAfterAll with Matchers  {
 
-   val validEntity = Entity(0L, "TestEntity")
+   val validEntity = Entity(0L, "TestEntity_0")
   
    // setup in  process instance of Neo4j for testing
    lazy val graphDb = TestServerBuilders
             .newInProcessBuilder()
-            .withFixture(
-                "CREATE (:Entity {name: 'TestEntity', node_id:'33'})" // this will be created id ID(p) = 0
+            .withFixture(""
+                + " CREATE (:Entity {name: 'TestEntity_0', node_id:'0'})" // this will be created id ID(p) = 0
+                + " CREATE (:Entity {name: 'TestEntity_1', node_id:'1'})" 
+                + " CREATE (:Entity {name: 'TestEntity_2', node_id:'2'})" 
             )
             .newServer();
    
@@ -32,11 +34,19 @@ class Neo4jEntityRepositorySpec extends FlatSpec with BeforeAndAfterAll with Mat
    }
   
    "getEntity" should "return None when entity id does not exists" in { 
-     entityRepository.getEntity(1L) should be (None)
+     entityRepository.getEntity(-1L) should be (None)
    } 
 
    "getEntity" should "return populated when entity id exists" in { 
      entityRepository.getEntity(0L) should be (Some(validEntity))
    } 
-  
+
+   "findShortestPath" should "return None when entities do not exist" in { 
+     entityRepository.findShortestPath(-1L, -2L) should be (None)
+   } 
+
+   "findShortestPath" should "return None when a path cannot be found between existing entities" in { 
+     entityRepository.findShortestPath(0L, 1L) should be (None)
+   } 
+
 }

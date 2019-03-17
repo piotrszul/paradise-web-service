@@ -10,6 +10,7 @@ import com.typesafe.config.Config
 import org.neo4j.driver.v1.GraphDatabase
 import org.neo4j.driver.v1.AuthTokens
 import java.io.Closeable
+import name.pszul.paradise.domain.Path
 
 /**
  * Neo4j/Cypher implementation of EntityRepository
@@ -41,9 +42,16 @@ class Neo4jEntityRepository(driver:Driver) extends EntityRepository with Closeab
     }   
   }
 
-  def close() {
+
+  override def findShortestPath(startId: Long, endId: Long): Option[Path] = None
+  
+  /**
+   * Release resources
+   */
+  override def close() {
     driver.close()
   }
+
 }
 
 /**
