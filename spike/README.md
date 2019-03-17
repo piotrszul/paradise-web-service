@@ -67,7 +67,29 @@ Tested through cyper-shell seem to work as expexted and under 1s (!30ms):
 
 	./bin/run_cypher.sh < cypher/undirected_shortest_path.cypher
 
+
+## Step 4 - Spike end to end REST service using Neo4j driver 
+
+Because it should be fast I am going to use python here, with flask as webservice framework.
+
+As the first setp just test basic connectivity to get a node:
+
+	GET /node/:node_id
+
+To run:
 	
+	./bin/run_api.sh
+
+And to test:
+
+	curl -i http://127.0.0.1:5000/node/9
+
+
+Some related resources:
+
+- FLASK: https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
+- FLASK: http://flask.pocoo.org/docs/1.0/tutorial/tests/
+- Neo4j python driver:  https://github.com/neo4j/neo4j-python-driver
 
 
 
