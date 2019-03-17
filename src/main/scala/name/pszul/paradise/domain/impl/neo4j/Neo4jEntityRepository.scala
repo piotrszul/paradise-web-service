@@ -6,11 +6,15 @@ import org.neo4j.driver.v1.Driver
 import org.neo4j.driver.v1.Session
 import collection.JavaConverters._
 import org.neo4j.driver.v1.Value
+import com.typesafe.config.Config
+import org.neo4j.driver.v1.GraphDatabase
+import org.neo4j.driver.v1.AuthTokens
+import java.io.Closeable
 
 /**
  * Neo4j/Cypher implementation of EntityRepository
  */
-class Neo4jEntityRepository(driver:Driver) extends EntityRepository {
+class Neo4jEntityRepository(driver:Driver) extends EntityRepository with Closeable {
 
   def toEntity(value:Value):Entity = {
     val node = value.asNode()
@@ -35,5 +39,18 @@ class Neo4jEntityRepository(driver:Driver) extends EntityRepository {
         session.close()
       }
     }   
+  }
+
+  def close() {
+    driver.close()
+  }
+}
+
+object Neo4jEntityRepository {
+  
+  def fromConfig(conf:Config):Neo4jEntityRepository = {
+    val driver = GraphDatabase.driver(conf.getString("neo4j.url"), 
+          AuthTokens.basic(conf.getString("neo4j.username"), conf.getString("neo4j.password")))
+    new Neo4jEntityRepository(driver)
   }
 }

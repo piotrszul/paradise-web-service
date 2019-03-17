@@ -6,6 +6,9 @@ import org.scalatra.servlet.ScalatraListener
 
 object StandaloneApp { // this is my entry object as specified in sbt project definition
   def main(args: Array[String]) {
+  
+    // Set config.file property for typesafe config to use
+    System.setProperty("config.file","conf/local.conf")  
     val port = if(System.getenv("PORT") != null) System.getenv("PORT").toInt else 8080
 
     val server = new Server(port)

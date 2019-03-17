@@ -71,5 +71,6 @@ jrebel.lic
 /bin/
 .cache-main
 .cache-tests
+/conf/*.conf
 
 
