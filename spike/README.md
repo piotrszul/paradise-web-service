@@ -25,8 +25,19 @@ With these assumptions should be able to extrect all nodes in one format and imp
 
 	node_id:ID, :LABEL, valid_until, name ... 
 
+And for relations(edges)
+
+	:START_ID,:END_ID,:TYPE,idx
+
+All nodes and edges imported in a few seconds so the approach works.
+TODO:
+
+- consider typing the properties
+- would be more flexible to provide neo4j import headers externally so that the extract does need to change if the import schema does (e.g property types)
+
 
 Some releant resources: 
+
 - http://www.mysqltutorial.org/mysql-export-table-to-csv/
 - https://neo4j.com/developer/guide-import-csv/#_super_fast_batch_importer_for_huge_datasets
 - https://neo4j.com/docs/operations-manual/current/tutorial/import-tool/

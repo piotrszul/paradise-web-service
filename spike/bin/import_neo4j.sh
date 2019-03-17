@@ -29,5 +29,6 @@ NODES=$(for i in $IMPORT_DIR/node/*.csv; do echo `basename ${i%.*}`; done)
 echo "Importig nodes: ${NODES}"
 
 "${NEO4J_IMPORT}" --into "${DEST_DB}" \
-  $(for n in $NODES; do echo -n " --nodes ${IMPORT_DIR}/node/${n}.csv"; done)  
+  $(for n in $NODES; do echo -n " --nodes ${IMPORT_DIR}/node/${n}.csv"; done) \
+  --relationships "${IMPORT_DIR}/edges.csv"
 
