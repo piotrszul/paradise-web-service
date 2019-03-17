@@ -80,9 +80,13 @@ To run:
 	
 	./bin/run_api.sh
 
-And to test:
+And to test get node id = 9:
 
 	curl -i http://127.0.0.1:5000/node/9
+
+and get shorest path from node 9 to node 60201
+
+	curl -i http://127.0.0.1:5000/node/9/shortestPath/60201
 
 
 Some related resources:
