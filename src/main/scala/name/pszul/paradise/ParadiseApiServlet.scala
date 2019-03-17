@@ -22,6 +22,12 @@ class ParadiseApiServlet(entityRepository:EntityRepository) extends ScalatraServ
     Ok()
   }
 
+  
+  /**
+   * GET /node/:id 
+   *	 
+   * @param id The id of the node to retrieve
+   */
   get("/node/:id") {
     val id = params("id").toLong
     val result = entityRepository.getEntity(id);

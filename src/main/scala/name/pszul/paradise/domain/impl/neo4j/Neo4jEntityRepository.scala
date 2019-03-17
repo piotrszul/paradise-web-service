@@ -46,8 +46,19 @@ class Neo4jEntityRepository(driver:Driver) extends EntityRepository with Closeab
   }
 }
 
+/**
+ * Companion object for Neo4jEntityRepository
+ */
 object Neo4jEntityRepository {
   
+  /**
+   * Creates a Neo4jEntityRepository from a typesafe config.
+   * 
+   * The config should include the followin keys: `neo4j.url`, `neo4j.username`, `neo4j.password`.
+   * 
+   * @param config The configuration to use
+   * @return Neo4jEntityRepository connected database from the config
+   */
   def fromConfig(conf:Config):Neo4jEntityRepository = {
     val driver = GraphDatabase.driver(conf.getString("neo4j.url"), 
           AuthTokens.basic(conf.getString("neo4j.username"), conf.getString("neo4j.password")))
