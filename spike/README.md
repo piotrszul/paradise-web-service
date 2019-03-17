@@ -88,6 +88,27 @@ and get shorest path from node 9 to node 60201
 
 	curl -i http://127.0.0.1:5000/node/9/shortestPath/60201
 
+So the general REST API deisgn will be:
+
+
+	GET /node/:node_id  -> JSON(node)
+
+	eg: {"id":9,"labels":["Address"],"properties":{"address":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","closed_date":"","company_type":"","countries":"","country_codes":"","ibcRUC":"","incorporation_date":"","jurisdiction":"","jurisdiction_description":"","name":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","node_id":"59217552","note":"","service_provider":"","sourceID":"Paradise Papers - Malta corporate registry","status":"","type":"","valid_until":"Malta corporate registry data is current through 2016"}}
+
+
+	GET /node/:node_id/shorestPath/:to_node_id -> JSON(path)
+
+	e.g: {"shortestPath":[{"id":9,"labels":["Address"],"name":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","uri":"http://127.0.0.1:5000/node/9"},{"id":59242,"labels":["Entity"],"name":"ALA INT. LIMITED","uri":"http://127.0.0.1:5000/node/59242"},{"id":60201,"labels":["Entity"],"name":"Euroyacht Limited","uri":"http://127.0.0.1:5000/node/60201"}]}
+
+
+Notes:
+	- The path response contains a list of node summaries (not full node) that includes: id, labels, name.
+	- To make the API nice node/node summary responses also include the `uri` to the node (`"uri":"http://127.0.0.1:5000/node/60201"`)
+
+TODO:
+	
+	-  in the node `id` and `node_id` are different - need to investigate ...
+
 
 Some related resources:
 
