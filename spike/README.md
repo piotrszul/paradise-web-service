@@ -30,6 +30,13 @@ And for relations(edges)
 	:START_ID,:END_ID,:TYPE,idx
 
 All nodes and edges imported in a few seconds so the approach works.
+
+To run:
+
+	./bin/extract_mysql.sh
+	./bin/import_neo4j.sh
+
+
 TODO:
 
 - consider typing the properties
@@ -41,6 +48,33 @@ Some releant resources:
 - http://www.mysqltutorial.org/mysql-export-table-to-csv/
 - https://neo4j.com/developer/guide-import-csv/#_super_fast_batch_importer_for_huge_datasets
 - https://neo4j.com/docs/operations-manual/current/tutorial/import-tool/
+
+## Step 3 - Check the shortestPath function in `cypher`
+
+In principle the following query should return the shortest path (the directed version):
+
+	    MATCH path=shortestPath((b)-[*]->(e))
+        WHERE ID(b)=60201 AND ID(e)=9
+        RETURN path;
+
+
+or (undirected version):
+	    MATCH path=shortestPath((b)-[*]-(e))
+        WHERE ID(b)=60201 AND ID(e)=9
+        RETURN path;
+
+Tested through cyper-shell seem to work as expexted and under 1s (!30ms):
+
+	./bin/run_cypher.sh < cypher/undirected_shortest_path.cypher
+
+	
+
+
+
+
+
+
+
 
 
 
