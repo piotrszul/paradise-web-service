@@ -11,27 +11,23 @@ import org.neo4j.driver.v1.GraphDatabase
 import org.neo4j.driver.v1.AuthTokens
 import java.io.Closeable
 import name.pszul.paradise.domain.Path
+import name.pszul.paradise.domain.impl.neo4j.Mapper._
 
 /**
  * Neo4j/Cypher implementation of EntityRepository
  */
 class Neo4jEntityRepository(driver:Driver) extends EntityRepository with Closeable {
-
-  def toEntity(value:Value):Entity = {
-    val node = value.asNode()
-    Entity(node.id, node.get("name").asString())
-  }
   
-  override def getEntity(id: Long): Option[Entity] = {
-    val cypherQuery = "MATCH (n) WHERE ID(n) = $id RETURN n"
+  
+  def querySingle[T](cypherQuery:String, params:Map[String,Any], mapper:Value=>T):Option[T] = {
     var session:Session = null
     try {
       session = driver.session()
-      val statementResult = session.run(cypherQuery, Map("id" -> id.asInstanceOf[Object]).asJava)
+      val statementResult = session.run(cypherQuery, params.mapValues(_.asInstanceOf[Object]).asJava)
       if (statementResult.hasNext()) {
         val record = statementResult.single()
         val value = record.get(0)
-        Some(toEntity(value))
+        Some(mapper(value))
       } else {
         None
       }
@@ -39,11 +35,18 @@ class Neo4jEntityRepository(driver:Driver) extends EntityRepository with Closeab
       if (session!=null) {
         session.close()
       }
-    }   
+    }       
+  }
+  
+  override def getEntity(id: Long): Option[Entity] = {
+    querySingle("MATCH (n) WHERE ID(n) = $id RETURN n", Map("id"->id), toEntity)
   }
 
-
-  override def findShortestPath(startId: Long, endId: Long): Option[Path] = None
+  override def findShortestPath(startId: Long, endId: Long): Option[Path] = {
+    querySingle("MATCH path=shortestPath((b)-[*]-(e)) WHERE ID(b)=$start_id AND ID(e)=$end_id RETURN path",
+        Map("start_id"->startId, "end_id"->endId), toPath)    
+  }
+    
   
   /**
    * Release resources

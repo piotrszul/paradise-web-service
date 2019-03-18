@@ -30,8 +30,18 @@ class ParadiseApiServlet(entityRepository:EntityRepository) extends ScalatraServ
    */
   get("/node/:id") {
     val id = params("id").toLong
-    val result = entityRepository.getEntity(id);
-    result.getOrElse(NotFound("Resource not found"))
+    entityRepository.getEntity(id).getOrElse(NotFound("Entity not found."))
+  }
+  
+  /**
+   * GET /node/:id 
+   *	 
+   * @param id The id of the node to retrieve
+   */
+  get("/node/:id/shortestPath/:toId") {
+    val id = params("id").toLong
+    val toId = params("toId").toLong
+    entityRepository.findShortestPath(id,toId).getOrElse(NotFound("Path not found."))
   }
   
 }

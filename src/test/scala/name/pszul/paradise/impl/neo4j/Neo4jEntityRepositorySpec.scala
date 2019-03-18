@@ -8,18 +8,20 @@ import org.neo4j.driver.v1.GraphDatabase
 import name.pszul.paradise.domain.impl.neo4j.Neo4jEntityRepository
 import org.scalatest.Matchers
 import name.pszul.paradise.domain.Entity
+import name.pszul.paradise.domain.Path
 
 class Neo4jEntityRepositorySpec extends FlatSpec with BeforeAndAfterAll with Matchers  {
 
-   val validEntity = Entity(0L, "TestEntity_0")
+  import name.pszul.paradise.domain.Fixtures._
   
    // setup in  process instance of Neo4j for testing
    lazy val graphDb = TestServerBuilders
             .newInProcessBuilder()
             .withFixture(""
-                + " CREATE (:Entity {name: 'TestEntity_0', node_id:'0'})" // this will be created id ID(p) = 0
-                + " CREATE (:Entity {name: 'TestEntity_1', node_id:'1'})" 
-                + " CREATE (:Entity {name: 'TestEntity_2', node_id:'2'})" 
+                + " CREATE (n0:Entity {name: 'TestEntity_0', node_id:'0'})" // this will be created id ID(p) = 0
+                + " CREATE (n1:Entity {name: 'TestEntity_1', node_id:'1'})" 
+                + " CREATE (n2:Address {name: 'TestAddress_2', node_id:'2'})"
+                + " WITH n2,n1 CREATE (n2)-[:address_of]->(n1)"
             )
             .newServer();
    
@@ -38,7 +40,7 @@ class Neo4jEntityRepositorySpec extends FlatSpec with BeforeAndAfterAll with Mat
    } 
 
    "getEntity" should "return populated when entity id exists" in { 
-     entityRepository.getEntity(0L) should be (Some(validEntity))
+     entityRepository.getEntity(testEntity_0.id) should be (Some(testEntity_0))
    } 
 
    "findShortestPath" should "return None when entities do not exist" in { 
@@ -46,7 +48,14 @@ class Neo4jEntityRepositorySpec extends FlatSpec with BeforeAndAfterAll with Mat
    } 
 
    "findShortestPath" should "return None when a path cannot be found between existing entities" in { 
-     entityRepository.findShortestPath(0L, 1L) should be (None)
+     entityRepository.findShortestPath(testEntity_0.id, testEntity_1.id) should be (None)
    } 
 
+   "findShortestPath" should "return a directed path when exists" in { 
+     entityRepository.findShortestPath(testAddress_2.id, testEntity_1.id) should be (Some(Path(testAddress_2,testEntity_1)))
+   } 
+
+   "findShortestPath" should "return a undirected path when exists" in { 
+     entityRepository.findShortestPath(testEntity_1.id, testAddress_2.id) should be (Some(Path(testEntity_1,testAddress_2)))
+   } 
 }
