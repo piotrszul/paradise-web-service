@@ -19,7 +19,9 @@ import name.pszul.paradise.domain.impl.neo4j.Mapper._
 class Neo4jEntityRepository(driver: Driver) extends EntityRepository with Closeable {
 
   def querySingle[T](cypherQuery: String, params: Map[String, Any], mapper: Value => T): Option[T] = {
+    // scalastyle:off
     var session: Session = null
+    // scalastyle:on
     try {
       session = driver.session()
       val statementResult = session.run(cypherQuery, params.mapValues(_.asInstanceOf[Object]).asJava)

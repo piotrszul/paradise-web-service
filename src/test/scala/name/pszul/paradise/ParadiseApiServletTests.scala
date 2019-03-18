@@ -20,32 +20,32 @@ class ParadiseApiServletTests extends ScalatraFlatSpec with MockFactory {
   addServlet(new ParadiseApiServlet(entityRepositoryStub), "/*")
 
   "GET /entity/:id" should "return status 404 if entity does not exit" in {
-    (entityRepositoryStub.getEntity _).when(nonExistingId_0).returns(None)
-    get(s"/entity/${nonExistingId_0}") {
+    (entityRepositoryStub.getEntity _).when(NonExistingId_0).returns(None)
+    get(s"/entity/${NonExistingId_0}") {
       status should equal(HTTP_NOT_FOUND)
     }
   }
 
   "GET /entity/:id" should "return status 200 and entity data for exitsing entity" in {
-    (entityRepositoryStub.getEntity _).when(testEntity_0.id).returns(Some(testEntity_0))
-    get(s"/entity/${testEntity_0.id}") {
+    (entityRepositoryStub.getEntity _).when(TestEntity_0.id).returns(Some(TestEntity_0))
+    get(s"/entity/${TestEntity_0.id}") {
       status should equal(HTTP_OK)
-      body should equal(testEntity_0_asJson)
+      body should equal(TestEntity_0_asJson)
     }
   }
 
   "GET /entity/:id/shortestPath/:toId" should "return status 404 if path does not exist" in {
-    (entityRepositoryStub.findShortestPath _).when(testEntity_0.id, testEntity_1.id).returns(None)
-    get(s"/entity/${testEntity_0.id}/shortestPath/${testEntity_1.id}") {
+    (entityRepositoryStub.findShortestPath _).when(TestEntity_0.id, TestEntity_1.id).returns(None)
+    get(s"/entity/${TestEntity_0.id}/shortestPath/${TestEntity_1.id}") {
       status should equal(HTTP_NOT_FOUND)
     }
   }
 
   "GET /entity/:id/shortestPath/:toId" should "return status 200 and valid path if it exist" in {
-    (entityRepositoryStub.findShortestPath _).when(testEntity_1.id, testAddress_2.id).returns(Some(testPath_1_2))
-    get(s"/entity/${testEntity_1.id}/shortestPath/${testAddress_2.id}") {
+    (entityRepositoryStub.findShortestPath _).when(TestEntity_1.id, TestAddress_2.id).returns(Some(TestPath_1_2))
+    get(s"/entity/${TestEntity_1.id}/shortestPath/${TestAddress_2.id}") {
       status should equal(HTTP_OK)
-      body should equal(testPath_1_2_asJson)
+      body should equal(TestPath_1_2_asJson)
     }
   }
 

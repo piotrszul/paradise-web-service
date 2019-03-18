@@ -17,7 +17,7 @@ class Neo4jEntityRepositorySpec extends FlatSpec with BeforeAndAfterAll with Mat
   // setup in  process instance of Neo4j for testing
   lazy val graphDb = TestServerBuilders
     .newInProcessBuilder()
-    .withFixture(cypherToCreateFixtures)
+    .withFixture(CypherToCreateFixtures)
     .newServer();
 
   // setup the driver and repository connected to the test neo4j
@@ -31,26 +31,26 @@ class Neo4jEntityRepositorySpec extends FlatSpec with BeforeAndAfterAll with Mat
   }
 
   "getEntity" should "return None when entity id does not exists" in {
-    entityRepository.getEntity(nonExistingId_0) should be(None)
+    entityRepository.getEntity(NonExistingId_0) should be(None)
   }
 
   "getEntity" should "return populated when entity id exists" in {
-    entityRepository.getEntity(testEntity_0.id) should be(Some(testEntity_0))
+    entityRepository.getEntity(TestEntity_0.id) should be(Some(TestEntity_0))
   }
 
   "findShortestPath" should "return None when entities do not exist" in {
-    entityRepository.findShortestPath(nonExistingId_0, nonExistingId_2) should be(None)
+    entityRepository.findShortestPath(NonExistingId_0, NonExistingId_2) should be(None)
   }
 
   "findShortestPath" should "return None when a path cannot be found between existing entities" in {
-    entityRepository.findShortestPath(testEntity_0.id, testEntity_1.id) should be(None)
+    entityRepository.findShortestPath(TestEntity_0.id, TestEntity_1.id) should be(None)
   }
 
   "findShortestPath" should "return a directed path when exists" in {
-    entityRepository.findShortestPath(testAddress_2.id, testEntity_1.id) should be(Some(testPath_2_1))
+    entityRepository.findShortestPath(TestAddress_2.id, TestEntity_1.id) should be(Some(TestPath_2_1))
   }
 
   "findShortestPath" should "return a undirected path when exists" in {
-    entityRepository.findShortestPath(testEntity_1.id, testAddress_2.id) should be(Some(testPath_1_2))
+    entityRepository.findShortestPath(TestEntity_1.id, TestAddress_2.id) should be(Some(TestPath_1_2))
   }
 }
