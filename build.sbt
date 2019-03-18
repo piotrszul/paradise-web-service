@@ -26,3 +26,5 @@ libraryDependencies ++= Seq(
 )
 
 enablePlugins(ScalatraPlugin)
+
+(scalastyleConfig) := baseDirectory.value / "build" / "scalastyle-config.xml"
