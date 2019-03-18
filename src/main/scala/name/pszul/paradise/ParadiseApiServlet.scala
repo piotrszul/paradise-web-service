@@ -6,6 +6,9 @@ import org.scalatra.json._
 import org.slf4j.LoggerFactory
 import name.pszul.paradise.domain.EntityRepository
 
+/**
+ * Servlet implementing REST API
+ */
 class ParadiseApiServlet(entityRepository:EntityRepository) extends ScalatraServlet with JacksonJsonSupport {
 
   val logger =  LoggerFactory.getLogger(getClass)
@@ -18,27 +21,42 @@ class ParadiseApiServlet(entityRepository:EntityRepository) extends ScalatraServ
     contentType = formats("json")
   }
   
+  /**
+   * GET /
+   * 
+   * Gets the name of the API
+   * @return the name of the API
+   */
+  
   get("/") {
-    Ok()
+    Ok("ParadiseAPI")
   }
-
   
   /**
-   * GET /node/:id 
+   * GET /entity/:id 
    *	 
-   * @param id The id of the node to retrieve
+   * Retrieves the entity by id
+   * 
+   * @param id The id of the entity to retrieve
+   * 
+   * @return the entity if exits, otherwise 404
    */
-  get("/node/:id") {
+  get("/entity/:id") {
     val id = params("id").toLong
     entityRepository.getEntity(id).getOrElse(NotFound("Entity not found."))
   }
   
   /**
-   * GET /node/:id 
+   * GET /entity/:id/shortestPath/:toId" 
    *	 
-   * @param id The id of the node to retrieve
+   * Find the undirected shortest path between two entities
+   * 
+   * @param id The id of the starting entity
+   * @param toId The id of the terminal entity
+   * 
+   * @return the shortest path between the entities if exits, otherwise 404
    */
-  get("/node/:id/shortestPath/:toId") {
+  get("/entity/:id/shortestPath/:toId") {
     val id = params("id").toLong
     val toId = params("toId").toLong
     entityRepository.findShortestPath(id,toId).getOrElse(NotFound("Path not found."))

@@ -40,12 +40,12 @@ I will validate these choise with a  [spike](spike/README.md)
 
 ## Rest API design
 
-	GET /node/:node_id  -> JSON(node)
+	GET /entity/:entity_id  -> JSON(node)
 
 	eg: {"id":9,"labels":["Address"],"properties":{"address":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","closed_date":"","company_type":"","countries":"","country_codes":"","ibcRUC":"","incorporation_date":"","jurisdiction":"","jurisdiction_description":"","name":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","node_id":"59217552","note":"","service_provider":"","sourceID":"Paradise Papers - Malta corporate registry","status":"","type":"","valid_until":"Malta corporate registry data is current through 2016"}}
 
 
-	GET /node/:node_id/shortestPath/:to_node_id -> JSON(path)
+	GET /entity/:entity_id/shortestPath/:to_entity_id -> JSON(path)
 
 	e.g: {"shortestPath":[{"id":9,"labels":["Address"],"name":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","uri":"http://127.0.0.1:5000/node/9"},{"id":59242,"labels":["Entity"],"name":"ALA INT. LIMITED","uri":"http://127.0.0.1:5000/node/59242"},{"id":60201,"labels":["Entity"],"name":"Euroyacht Limited","uri":"http://127.0.0.1:5000/node/60201"}]}
 
