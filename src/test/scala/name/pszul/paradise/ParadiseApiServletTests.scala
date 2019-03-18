@@ -9,18 +9,17 @@ import name.pszul.paradise.domain.Path
 
 class ParadiseApiServletTests extends ScalatraFlatSpec with MockFactory {
 
-  import name.pszul.paradise.domain.Fixtures._
-  
-  val testEntity_0_asJson = """{"id":0,"name":"TestEntity_0"}"""
-  val testPath_1_2_asJson = """{"steps":[{"id":1,"name":"TestEntity_1"},{"id":2,"name":"TestAddress_2"}]}"""
+  import name.pszul.paradise.domain.DomainFixtures._
+  import name.pszul.paradise.JsonFixtures._
   
   // setup stub for the entityRepository
   val entityRepositoryStub = stub[EntityRepository]
+  // setup the API servlet with stubbed repository
   addServlet(new ParadiseApiServlet(entityRepositoryStub), "/*")
 
   "GET /entity/:id" should "return status 404 if entity does not exit" in {
-    (entityRepositoryStub.getEntity _).when(-1L).returns(None)
-    get("/entity/-1") {
+    (entityRepositoryStub.getEntity _).when(nonExistingId_0).returns(None)
+    get(s"/entity/${nonExistingId_0}") {
       status should equal (404)
     }
   }
@@ -34,15 +33,15 @@ class ParadiseApiServletTests extends ScalatraFlatSpec with MockFactory {
   }
 
   "GET /entity/:id/shortestPath/:toId" should "return status 404 if path does not exist" in {
-    (entityRepositoryStub.findShortestPath _).when(0L,1L).returns(None)
-    get("/entity/0/shortestPath/1") {
+    (entityRepositoryStub.findShortestPath _).when(testEntity_0.id,testEntity_1.id).returns(None)
+    get(s"/entity/${testEntity_0.id}/shortestPath/${testEntity_1.id}") {
       status should equal (404)
     }
   }
 
   "GET /entity/:id/shortestPath/:toId" should "return status 200 and valid path if it exist" in {
-    (entityRepositoryStub.findShortestPath _).when(1L,2L).returns(Some(Path(testEntity_1, testAddress_2)))
-    get("/entity/1/shortestPath/2") {
+    (entityRepositoryStub.findShortestPath _).when(testEntity_1.id,testAddress_2.id).returns(Some(testPath_1_2))
+    get(s"/entity/${testEntity_1.id}/shortestPath/${testAddress_2.id}") {
       status should equal (200)
       body should equal (testPath_1_2_asJson)
     }
