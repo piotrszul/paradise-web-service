@@ -1,62 +1,0 @@
-Neo4j version: 3.3.4
-Importing the contents of these files into /Users/szu004/third/neo4j-community-3.3.4/data/databases/paradise.db:
-Nodes:
-  /Users/szu004/edu/graph/paradise-web-service/etl/res/nodes-header.csv
-  /Users/szu004/edu/graph/paradise-web-service/etl/target/extract/nodes.csv
-Relationships:
-  /Users/szu004/edu/graph/paradise-web-service/etl/res/edges-header.csv
-  /Users/szu004/edu/graph/paradise-web-service/etl/target/extract/edges.csv
-
-Available resources:
-  Total machine memory: 16.00 GB
-  Free machine memory: 4.10 GB
-  Max heap memory : 3.56 GB
-  Processors: 4
-  Configured max memory: 500.21 MB
-
-Nodes, started 2019-03-19 07:48:10.260+0000
-[>:15.6|NOD|PROPERTIES(4)=============|LABEL SCAN---|*v:4.07 MB/s(3)==========================]5.46K ∆5.46K[>:15.66|NO|*PROPERTIES(4)=======================================|LABE|v:25.04 MB/s(3)========] 163K ∆ 158K
-Done in 3s 375ms
-Relationships, started 2019-03-19 07:48:13.701+0000
-[*>:??--------------------------------------|TYP|PR|RECORDS|PROPERTIES-------] 267K ∆ 267K[*>:??-----------------------------------------|TYP|P|RECORDS|PROPERTIES------|v:??-----------] 365K ∆98.2K
-Done in 964ms
-Node Degrees, started 2019-03-19 07:48:15.305+0000
-[>(2)========================================|*CALCULATE--------------------------------------] 365K ∆ 365K
-Done in 138ms
-Relationship --> Relationship  1-6/6, started 2019-03-19 07:48:15.604+0000
-[*>------------------------------------------------------|LINK(2)======|v:??------------------] 364K ∆ 364K
-Done in 167ms
-RelationshipGroup 1-6/6, started 2019-03-19 07:48:15.798+0000
-[*>:??-------------------------------------------------------------------------------|v:??----]3.27K ∆3.27K
-Done in 40ms
-Node --> Relationship, started 2019-03-19 07:48:15.853+0000
-[*>:??---------------------------------------------|>---------------------|LINK--|v:??--------] 163K ∆ 163K
-Done in 213ms
-Relationship --> Relationship 1-6/6, started 2019-03-19 07:48:16.127+0000
-[>|>-----------------------|*LINK(2)=========================|v:??----------------------------] 364K ∆ 364K
-Done in 213ms
-Count groups, started 2019-03-19 07:48:16.553+0000
-[>|*>-----------------------------------------------------------------------|COUNT------------]2.28K ∆2.28K
-Done in 10ms
-Gather, started 2019-03-19 07:48:18.165+0000
-[*>:??----------------------------------------------------------------------------------------]    0 ∆    0[>(4)========|*CACHE--------------------------------------------------------------------------]2.28K ∆2.28K
-Done in 19ms
-Write, started 2019-03-19 07:48:18.316+0000
-[*>:??----------------------------------------------------------------------------|ENCOD|v:??-]2.28K ∆2.28K
-Done in 23ms
-Node --> Group, started 2019-03-19 07:48:18.426+0000
-[>-----------|FIRST-----------------------|*v:??----------------------------------------------]1.09K ∆1.09K
-Done in 13ms
-Node counts, started 2019-03-19 07:48:18.569+0000
-[*>(4)========================================================================================]49.2M ∆49.2M[*>(4)========================================================================================]84.1M ∆34.9M
-Done in 2s 788ms
-Relationship counts, started 2019-03-19 07:48:21.392+0000
-[>-------------------------------------|*COUNT------------------------------------------------] 370K ∆ 370K
-Done in 97ms
-
-IMPORT DONE in 11s 674ms. 
-Imported:
-  163414 nodes
-  364456 relationships
-  2979080 properties
-Peak memory usage: 1.29 GB
