@@ -1,11 +1,13 @@
 import name.pszul.paradise._
 import org.scalatra._
 import javax.servlet.ServletContext
-import com.typesafe.config.{ Config, ConfigFactory }
 import name.pszul.paradise.domain.impl.neo4j.Neo4jEntityRepository
 import scala.collection.mutable.MutableList
 import java.io.Closeable
 import org.slf4j.LoggerFactory
+import java.net.URL
+import java.io.File
+import name.pszul.paradise.AppConfigFactory
 
 class ScalatraBootstrap extends LifeCycle {
 
@@ -14,7 +16,7 @@ class ScalatraBootstrap extends LifeCycle {
   val managedCloseable = MutableList[Closeable]()
 
   override def init(context: ServletContext) {
-    val conf: Config = ConfigFactory.load()
+    val conf = AppConfigFactory.loadFrom(context)
     val entityRepository = Neo4jEntityRepository.fromConfig(conf)
     managedCloseable += entityRepository
     context.mount(new ParadiseApiServlet(entityRepository), "/*")

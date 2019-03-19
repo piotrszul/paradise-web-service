@@ -107,6 +107,7 @@ Notes:
 - The path response contains a list of node summaries (not full node) that includes: id, labels, name.
 - To make the API nice node/node summary responses also include the `uri` to the node (`"uri":"http://127.0.0.1:5000/node/60201"`)
 
+
 TODO:
 	
 -  in the node `id` and `node_id` are different - need to investigate ...
@@ -140,3 +141,19 @@ to be sorted in increasing order. (But can be done). This may be the best ... (i
 TODO:
 
 - ask what it should be.
+
+
+## Web Application configuration
+
+See: https://stackoverflow.com/questions/13956651/externalizing-tomcat-webapp-config-from-war-file
+
+In code:
+	
+	getServletContext().getInitParameter(name)) 
+	
+Tomcat setup (`$CATALINA_BASE/conf/[enginename]/[hostname]/$APP.xml`):
+
+	<Context docBase="${basedir}/src/main/webapp" reloadable="true">
+    		<Parameter name="min" value="dev"/>
+	</Context>
+	
