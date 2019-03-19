@@ -81,13 +81,13 @@ To run:
 	
 	./bin/run_api.sh
 
-And to test get node id = 9:
+And to test get node id = 59217552:
 
-	curl -i http://127.0.0.1:5000/node/9
+	curl -i http://127.0.0.1:5000/node/59217552
 
-and get shorest path from node 9 to node 60201
+and get shorest path from node 59217552 to node 82000988
 
-	curl -i http://127.0.0.1:5000/node/9/shortestPath/60201
+	curl -i http://127.0.0.1:5000/node/59217552/shortestPath/82000988
 
 So the general REST API deisgn will be:
 

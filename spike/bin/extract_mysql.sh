@@ -32,22 +32,25 @@ PROPERTY_FIELDS="valid_until country_codes countries sourceID address name juris
 NODES=$(mysql -u crypto -pqwerty paradise -N -B -e "show tables" | grep "nodes" | awk -F "." '{print $2}')
 echo "Extrcting nodes: $NODES"
 
-for NODE in ${NODES}; do
-   mysql -u ${MYSQL_USER} -p${MYSQL_PASS} paradise <<SQL
+mysql -u ${MYSQL_USER} -p${MYSQL_PASS} paradise <<SQL
 SELECT
    'node_id:ID',':LABEL' $(for p in $PROPERTY_FIELDS; do echo -n ",'$p'";done)
 UNION ALL
 SELECT 
     \`n.node_id\`, JSON_UNQUOTE(JSON_EXTRACT(\`labels(n)\`,'\$[0]')) $(for p in $PROPERTY_FIELDS; do echo -n ",\`n.$p\`";done)
 FROM
-   \`nodes.${NODE}\`
-INTO OUTFILE '${EXPORT_DIR}/node/${NODE}.csv' 
+   (SELECT * from \`nodes.entity\` 
+   UNION SELECT * from \`nodes.address\` 
+   UNION SELECT * from \`nodes.officer\` 
+   UNION SELECT * from \`nodes.intermediary\` 
+   UNION SELECT * from \`nodes.other\` 
+   ORDER BY \`n.node_id\`) as nodes
+INTO OUTFILE '${EXPORT_DIR}/nodes.csv' 
 FIELDS ENCLOSED BY '"' 
 TERMINATED BY ',' 
 ESCAPED BY '"' 
 LINES TERMINATED BY '\n';
 SQL
-done
 
 
 #
