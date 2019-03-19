@@ -54,6 +54,37 @@ if [ -f "$HOME/.paradise.sh" ]; then
 fi
 
 #
+# Process command line opions
+#
+while [ $# -gt 0 ]; do
+    case "$1" in
+    --neo4j-db-file)
+      shift
+      NEO4J_DB_FILE="$1"
+      ;;
+    --subset--with-max-id)
+      shift
+      SUBSET_MAX_ID="$1" #e.g: 59094091
+      ;;
+    -*)
+      fatal_error "unrecognized option: $1"
+      ;;
+    *)
+      break;
+      ;;
+    esac
+    shift
+done
+
+
+NODE_SUBSET_QUERY=
+EDGE_SUBSET_QUERY=
+if [ -n "${SUBSET_MAX_ID}" ]; then
+  NODE_SUBSET_QUERY="WHERE \`n.node_id\` <= ${SUBSET_MAX_ID}"
+  EDGE_SUBSET_QUERY="WHERE node_1 <= ${SUBSET_MAX_ID} AND node_2 <=${SUBSET_MAX_ID}"
+fi
+
+#
 # Validate and mysql configuation
 #
 MYSQL_USER="${MYSQL_USER:? needs to be set to mysql user}"
@@ -101,7 +132,7 @@ MYSQL_NODE_COUNT=$(sql_query "SELECT count(*) FROM (SELECT * from \`nodes.entity
   UNION SELECT * from \`nodes.officer\` \
   UNION SELECT * from \`nodes.intermediary\` \
   UNION SELECT * from \`nodes.other\` \
-) as nodes")
+) as nodes ${NODE_SUBSET_QUERY}")
 
 info "Extracting ${MYSQL_NODE_COUNT} nodes to: '${NODE_EXTRACT_FILE}'"
 
@@ -117,7 +148,7 @@ FROM
    UNION SELECT * from \`nodes.officer\` 
    UNION SELECT * from \`nodes.intermediary\` 
    UNION SELECT * from \`nodes.other\` 
-   ORDER BY \`n.node_id\`) as nodes
+   ORDER BY \`n.node_id\`) as nodes ${NODE_SUBSET_QUERY}
 INTO OUTFILE '${NODE_EXTRACT_FILE}' 
 FIELDS ENCLOSED BY '"' 
 TERMINATED BY ',' 
@@ -142,7 +173,7 @@ fi
 # Extract edges (relations)
 #
 EDGE_EXTRACT_FILE="${EXPORT_DIR}/edges.csv"
-MYSQL_EDGE_COUNT=$(sql_query "SELECT count(*) FROM edges")
+MYSQL_EDGE_COUNT=$(sql_query "SELECT count(*) FROM edges ${EDGE_SUBSET_QUERY}")
 
 info "Extracting ${MYSQL_EDGE_COUNT} edges to: '${EDGE_EXTRACT_FILE}'"
 
@@ -150,7 +181,7 @@ sql_run <<SQL
 SELECT 
     node_1, node_2, rel_type, idx
 FROM
-   edges
+   edges ${EDGE_SUBSET_QUERY}
 INTO OUTFILE '${EDGE_EXTRACT_FILE}' 
 FIELDS ENCLOSED BY '"' 
 TERMINATED BY ',' 
