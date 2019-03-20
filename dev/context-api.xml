@@ -1,0 +1,3 @@
+<Context path="/api" reloadable="true">
+    <Parameter name="config-file" value="conf/local.conf"/>
+</Context>

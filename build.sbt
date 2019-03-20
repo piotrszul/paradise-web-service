@@ -40,3 +40,6 @@ lazy val testScalastyle = taskKey[Unit]("testScalastyle")
 testScalastyle := scalastyle.in(Test).toTask("").value
 (test in Test) := ((test in Test) dependsOn testScalastyle).value
 
+
+enablePlugins(TomcatPlugin)
+containerArgs := Seq("--path","/api","--context-xml","dev/context-api.xml")
