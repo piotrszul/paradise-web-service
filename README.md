@@ -127,9 +127,43 @@ Restart neo4j.
 
 
 
+## Building and running REST API
+
+Prerequisites:
+	
+	- sbt version 1.1.4+
+
+To build the project war use:
+
+	sbt package
+
+This will run the unit test produce `target/scala-2.11/paradise-web-service_2.11-0.1.0-SNAPSHOT.war`
 
 
+# Running with docker-compose
 
+Prerequisites:
+	
+	- docker-compose installed locally
+
+To start with the test database (small anonmyzed extract of the full database) use:
+
+	./dev/run_with_compose.sh
+
+This starts container with neo4j (exposing bolt on port 7777) and tomcat (at port 8888)
+
+To test use:
+
+	curl -i http://localhost:8888/api/entity/34178939
+
+or
+
+	curl -i http://localhost:8888/api/entity/39041817/shortestPath/39172370
+
+
+To connect to neo4j (authentication is off):
+
+	$NEO4J_HOME/cypher-shell -a bolt://localhost:7777
 
 # Open issues and tasks
 

@@ -28,7 +28,7 @@ libraryDependencies ++= Seq(
 enablePlugins(ScalatraPlugin)
 
 // configure scalacheck
-(scalastyleConfig) := baseDirectory.value / "build" / "scalastyle-config.xml"
+(scalastyleConfig) := baseDirectory.value / "dev" / "scalastyle-config.xml"
 
 // add scalacheck before compile
 lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")

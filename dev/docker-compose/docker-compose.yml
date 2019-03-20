@@ -1,0 +1,20 @@
+version: '3'
+services:
+  db:
+    image: "neo4j:3.5.3"
+    environment:
+      - NEO4J_AUTH=none
+    volumes:
+      - "../../target/rundb/test.db:/data/databases/graph.db"
+    ports:
+      - "7777:7687"
+  web:
+    build: "."
+    ports:
+      -  "8888:8080"
+    volumes:
+      - "../../target/scala-2.11/paradise-web-service_2.11-0.1.0-SNAPSHOT.war:/usr/local/tomcat/webapps/api.war"
+    depends_on:
+      - "db"
+    command: ["wait-for-it.sh","--timeout=30","db:7687","--","catalina.sh","run"]
+    
