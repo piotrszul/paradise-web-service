@@ -97,9 +97,50 @@ The genernal wokflow is:
 
 ## Running the ETL
 
-	TBP:
 
-	./etl/bin/run_eth.sh
+Pre-requisites:
+	
+	- a running instance of MySQL 5.7+ (with access detail)
+	- mysql client installed locally
+	- neo4j community edition (version 3.5.3) installed locally in $NEO4J_HOME (with initial password for `neo4j` changed)
+
+Import the SQL dump to the sql database, e.g.:
+
+	curl -v https://[url-masked]/paradise.sql  | mysql -u <USERNAME> -p
+
+Configure the etl script in `$HOME/.paradise.sh`. You can copy the tmplate from `etc/conf/paradise.sh.template`.
+Per mininum you need to set `NEO4J_HOME`, `MYSQL_USER`, `MYSQL_PWD`. See comment in `etl/bin/run_etl.sh` for more info.
+
+Run the etl script with:
+
+	./etl/bin/run_etl.sh
+
+This will ingest the data to the neo4j database named `paradise.db`.
+
+Point your neo4j instance to this database setting in `$NEOJ4_HOME/conf/neo4j.conf`:
+
+	dbms.active_database=paradise.db
+
+Restart neo4j.
+	
+	`$NEOJ4_HOME/bin/neo4j restart
+
+
+
+
+
+
+
+# Open issues and tasks
+
+
+
+
+
+
+
+
+
 
 
 

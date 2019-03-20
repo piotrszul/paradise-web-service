@@ -1,6 +1,4 @@
 NEO4J_HOME=<replace-with-path-neo4j-community>
 MYSQL_USER=<replace-with-mysql-user>
 MYSQL_PWD=<replace-with-mysql-password>
-NEO4J_USERNAME="neo4j"
-NEO4J_PASSWORD=<replace-with-neo4j-password>
 
