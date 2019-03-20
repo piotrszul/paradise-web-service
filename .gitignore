@@ -72,5 +72,5 @@ jrebel.lic
 .cache-main
 .cache-tests
 /conf/*.conf
-
+.pytest_cache
 

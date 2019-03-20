@@ -16,5 +16,5 @@ mkdir -p "${DB_RUN_DIR}"
 
 tar -xzf "${DB_SRC_DIR}/test.db.tar.gz" -C "${DB_RUN_DIR}"
 
-docker-compose -f "${PWD}/dev/docker-compose/docker-compose.yml" up "$@"
+docker-compose -f "${PWD}/dev/docker-compose/docker-compose.yml" "$@"
 

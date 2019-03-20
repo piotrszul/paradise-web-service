@@ -150,7 +150,6 @@ To build the project war use:
 
 This will run the unit test produce `target/scala-2.11/paradise-web-service_2.11-0.1.0-SNAPSHOT.war`
 
-
 ### Running locally 
 
 Create a configuration file at `conf/local.conf` with connection details to the neo4j server to use, e.g.:
@@ -188,7 +187,7 @@ Prerequisites:
 
 To start with the test database (small anonmyzed extract of the full database) use:
 
-	./dev/run_with_compose.sh
+	./dev/run_with_compose.sh up
 
 This starts containers with neo4j (exposing bolt on port 7777) and tomcat (at port 8888)
 
@@ -209,6 +208,10 @@ To connect to neo4j (authentication is off):
 The database extract is in `src/test/neo4j/test.db.tar.gz` can be updated with:
 
 	dev/build_test_db.sh
+
+To stop the container use:
+	
+	./dev/run_with_compose.sh stop
 
 
 ### Deploying and configuring
@@ -233,9 +236,25 @@ E.g. for tomcat in a context descriptor file:
 	</Context>
 
 
+### Running integration tests
+
+Integration test are created using python [tavern](https://taverntesting.github.io/) REST tesing framework.
+The tests require the `docker-compose` setup to be running
+
+Prerequisites
+
+	- `tavern` and `py.test` installed, .e.g; `pip install tavern[py.test]` 
+
+To run the tests use:
+
+	./dev/run_with_compose.sh up
+	# in another terminal
+	./dev/run-it.sh
+	./dev/run_with_compose.sh stop
+
+
 # TOOD, Open issues and tasks
 
-- [TODO] add REST API integration tests on the docker-compose setup
 - [TODO] Current implementation does not add `uri` element to `entity` responses
 - [TODO] Current implementation does not add `class` and `properties` elements to `entity responses`
 - [Issue] Neo4j `shortedPath` does not work if the start and end nodes are the same. Currently API fails with code 500. If finding path between the same 
@@ -247,7 +266,8 @@ the max length should be constrained (here to 5) possibly with a configurable pa
 e.g. `{steps: [relType:"address-of", "from":{ "id"... }, "to":{ ...}}, ...]}`
 - [TODO] Add more stringent verification of the ingest by comparing counts of nodes and edges of different typed between mysql and neo4j after ingest
 - [TODO] Include more logging. At this stage since the application does little more than bridging REST API to neo4j most of the logging can be done by cross-cutting entry points to different layers (REST layer, persistence layer etc).
-
+- [TODO] Automate running of end to end integration tests on docker-compose setup
+- [TODO] Add in build scala based integation tests (see: https://github.com/orrsella/scala-e2e-testing)
 
 
 

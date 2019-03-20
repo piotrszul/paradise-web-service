@@ -1,0 +1,79 @@
+# End to end intrgation tests for Paradise API
+# The end point is assumed to be at: http://localhost:8888/api
+# The database from `src/test/neo4j/test.db.tar.gz`
+# This corresponds to the docker-compose setup from: `dev/run-with-compose.sh`
+---
+test_name: Test /entity endpoint
+# ...and each test has one or more stages (e.g. an HTTP request)
+stages:
+  - name: Find exising exising entiyt
+
+    request:
+      url: http://localhost:8888/api/entity/34178939
+      method: GET
+
+    response:
+      status_code: 200
+      body:
+        id: 34178939
+        name: Name_34178939
+
+  - name: Fails with 404 for non exising entity
+
+    request:
+      url: http://localhost:8888/api/entity/99999
+      method: GET
+
+    response:
+      status_code: 404
+ 
+---
+test_name: Test /shortestPath endpoint
+
+stages:
+  - name: Finds shortestPath between to entities if exists
+
+    request:
+      url: http://localhost:8888/api/entity/39041817/shortestPath/39172370
+      method: GET
+
+    response:
+      status_code: 200
+      body:
+        steps:
+          - id: 39041817
+            name: Name_39041817
+          - id: 39096152
+            name: Name_39096152
+          - id: 39031075
+            name: Name_39031075
+          - id: 39172370
+            name: Name_39172370
+ 
+  - name: Finds shortestPath between to entities if exists
+
+    request:
+      url: http://localhost:8888/api/entity/39041817/shortestPath/39172370
+      method: GET
+
+    response:
+      status_code: 200
+      body:
+        steps:
+          - id: 39041817
+            name: Name_39041817
+          - id: 39096152
+            name: Name_39096152
+          - id: 39031075
+            name: Name_39031075
+          - id: 39172370
+            name: Name_39172370
+
+  - name: Fails with 404 if a path cannot be found
+
+    request:
+      url: http://localhost:8888/api/entity/99999999/shortestPath/39172370
+      method: GET
+
+    response:
+      status_code: 404
