@@ -1,6 +1,19 @@
 Paradise Web Service
 ====================
 
+The project follows the standard `maven/sbt` source layout for web applications:
+
+- src - source files
+- targer  - compiled artefacts
+
+with some additional directories:
+
+- dev -  supporting develpement/build files 
+- conf - configuration files
+- etl - database ingeest 
+- spike - technical spike 
+
+
 # Design
 
 ## Clarifications
@@ -140,7 +153,36 @@ To build the project war use:
 This will run the unit test produce `target/scala-2.11/paradise-web-service_2.11-0.1.0-SNAPSHOT.war`
 
 
-# Running with docker-compose
+### Running locally 
+
+Create a configuration file at `conf/local.conf` with connection details to the neo4j server to use, e.g.:
+
+	neo4j {
+	    url = "bolt://localhost:7687"
+	    username = "neo4j"
+	    password = "neo4j"
+	}
+
+Note: (this file is ignored in .gitgnore)
+
+To start the api use:
+
+	sbt tomcat:start tomcat:join
+
+This will start tomcat container runing at port 8080 with the webapp delpoyed at `/api`.
+
+To test use:
+
+	curl -i http://localhost:8080/api/entity/34178939
+
+or
+
+	curl -i http://localhost:8080/api/entity/39041817/shortestPath/39172370
+
+
+### Running with docker-compose
+
+To is a self conatined setup with small anonmyzed extract of the full database suitable for integration testing.
 
 Prerequisites:
 	
@@ -150,7 +192,7 @@ To start with the test database (small anonmyzed extract of the full database) u
 
 	./dev/run_with_compose.sh
 
-This starts container with neo4j (exposing bolt on port 7777) and tomcat (at port 8888)
+This starts containers with neo4j (exposing bolt on port 7777) and tomcat (at port 8888)
 
 To test use:
 
@@ -165,12 +207,47 @@ To connect to neo4j (authentication is off):
 
 	$NEO4J_HOME/cypher-shell -a bolt://localhost:7777
 
-# Open issues and tasks
+
+The database extract is in `src/test/neo4j/test.db.tar.gz` can be updated with:
+
+	dev/build_test_db.sh
 
 
+### Deploying and configuring
+
+The application configuraion is defined  in a `HOCON` formated file.
+The current options are:
+
+	// configure neo4j connection
+ 	neo4j {
+	    url = "bolt://localhost:7687" 	// the url to neo4j bolt connection to use
+	    username = "neo4j"				// neo4j username
+	    password = "neo4j"				// neo4h password
+	}
+
+The path to the config file is passed to the web application in the `config-file` initParameter.
+
+These can be set configured during deployment in a container specific manner. 
+E.g. for tomcat in a context descriptor file:
+
+	<Context >
+	    <Parameter name="config-file" value="conf/local.conf"/>
+	</Context>
 
 
+# TOOD, Open issues and tasks
 
+- [TODO] add REST API integration tests on the docker-compose setup
+- [TODO] Current implementation does not add `uri` element to `entity` responses
+- [TODO] Current implementation does not add `type` and `properties` elements to `entity responses`
+- [Issue] Neo4j `shortedPath` does not work if the start and end nodes are the same. Currently API fails with code 500. If finding path between the same 
+node is required (not sure if it's useful) then the implementation can be extened to use alternative query in this 
+case: `MATCH path=(n)-[*..5]-(n) WHERE ID(n)=$ID RETURN path ORDER BY lenght(path) LIMIT 1`. As search for unlimited paths is likely to take a lot of time
+the max lenhth should be consitrainded (here to 5) possibly with a configurable parameter.
+- [Issue] Neo4j driver is eagerly checks for connectivity to the server. The web app fails to start if the server is not avaliable (and cannot recover from it). It should start and fail on requests, and recover once the server is available. This seem to work if the databse becomes unavavailable after the driver is initialized (e.g. fails per requests and recovers).
+- [IDEA] To make to output more useful the `path` resource couild include the types of relations as well as nodes in the path, 
+e.g. {steps: [relType:"address-of", "from":{ "id"... }, "to":{ ...}}, ...]}
+- [TODO] Add more stringet verification of the ingest by comparing counts of nodes and edges of different typed between mysql and neo4j after ingest
 
 
 
