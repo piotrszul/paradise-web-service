@@ -33,40 +33,75 @@ As for other options:
 - Apache ThinkerPop: Possibly applicable but does not seem to have some of advantages of neo4j. 
 
 
-Cypher vs gremlin: There is a 'germlin' connector to neo4j but for simplicity I am going to use cypher (as there are not requiremnts for make the API graph database agnostic)
+Cypher vs gremlin: There is a 'germlin' connector to neo4j but for simplicity I am going to use cypher (as there are not requiremnts for make the API graph database agnostic and cypher is less likely not to be compatbile with neo4j in any way)
 
-I will validate these choise with a  [spike](spike/README.md)
+I will validate these choices with a  [spike](spike/README.md)
+
+
+## Graph Databse design
+
+Since the extract is (appears to be) from Neo4j the sensible approach seem to recreate the schema of the original graph.
+
+Which comes down to creating nodes with nodes:
+
+- ID(n): id from `n.node_id` column 
+- labels: Entity, Officer, Intermediary, Address and Other
+- properties: "valid_until","country_codes","countries","sourceID","jurisdiction_description","service_provider","jurisdiction","closed_date","incorporation_date","ibcRUC","type","status","company_type","note" 
+
+and relations:
+	
+- types: registered_address, officer_of, connected_to, intermediary_of, same_name_as, same_id_as
+- properties: idx - back reference to the idx field from the SQL dump
+
+Notes:
+
+- there is longer discussion of the choices for nodes ids in [spike](spike/README.md). Assuming however that neo4j is `read-only` view imporing the nodes with actual ids form SQL dump seem to be the best option.
+- all properties are typed as STRINGS (to correspond with TEXT type in the SQL dump)
+- null values: the SQL dump appears to be somewhat inconsistent here. No rows have the actual `NULL` values but some columns e.g. `n.status` come with values such as `''` (empty string) or `'null'`. 
+  For the purpose of this assignment I going to assume if a value `IS NOT NULL` in SQL it should be literaly imported to Neo4J.  
 
 
 ## Rest API design
 
-	GET /entity/:entity_id  -> JSON(node)
+	GET /entity/:entity_id  -> JSON(entity)
 
 	eg: {"id":9,"labels":["Address"],"properties":{"address":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","closed_date":"","company_type":"","countries":"","country_codes":"","ibcRUC":"","incorporation_date":"","jurisdiction":"","jurisdiction_description":"","name":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","node_id":"59217552","note":"","service_provider":"","sourceID":"Paradise Papers - Malta corporate registry","status":"","type":"","valid_until":"Malta corporate registry data is current through 2016"}}
 
 
 	GET /entity/:entity_id/shortestPath/:to_entity_id -> JSON(path)
 
-	e.g: {"shortestPath":[{"id":9,"labels":["Address"],"name":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","uri":"http://127.0.0.1:5000/node/9"},{"id":59242,"labels":["Entity"],"name":"ALA INT. LIMITED","uri":"http://127.0.0.1:5000/node/59242"},{"id":60201,"labels":["Entity"],"name":"Euroyacht Limited","uri":"http://127.0.0.1:5000/node/60201"}]}
-
+	e.g: {"steps":[{"id":9,"labels":["Address"],"name":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","uri":"http://127.0.0.1:5000/entity/9"},{"id":59242,"labels":["Entity"],"name":"ALA INT. LIMITED","uri":"http://127.0.0.1:5000/entity/59242"},{"id":60201,"labels":["Entity"],"name":"Euroyacht Limited","uri":"http://127.0.0.1:5000/entity/60201"}]}
 
 Notes:
 
-- The path response contains a list of node summaries (not full node) that includes: id, labels, name.
-- To make the API nice node/node summary responses also include the `uri` to the node (`"uri":"http://127.0.0.1:5000/node/60201"`)
+- Both endpoints return HTTP 404 if entity/path cannot be found
+- The path response contains a list of entity summaries (not full node) that includes: id, labels, name.
+- To make the API nice entity/entity summary responses also include the `uri` to the entity (`"uri":"http://127.0.0.1:5000/entity/60201"`)
+
+Assumptions:
+
+- Service is 'public', no AAA needed at this stage
+
+##  ETL Design
+
+Since this is one off ingest a 'low tech' shell script should suffice.
+The genernal wokflow is:
+	
+- use `mysql` to `SELECT ... INTO OUTFILE` to export csv files for nodes and edges
+- validate the extract (number of nodes/edges vs. number of lines)
+- import csv to Neo4j using `neo4j-import`
+- validate the import (number of imported nodes/edges vs. number of lines)
+
+
+# Build & Run
+
+## Running the ETL
+
+	TBP:
+
+	./etl/bin/run_eth.sh
 
 
 
 
 
-## Build & Run ##
-
-
-```sh
-$ cd paradise-web-service
-$ sbt
-> jetty:start
-> browse
-```
-
-If `browse` doesn't launch your browser, manually open [http://localhost:8080/](http://localhost:8080/) in your browser.

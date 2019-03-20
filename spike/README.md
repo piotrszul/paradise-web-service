@@ -138,9 +138,13 @@ Nevertheless for this size of data even the queries with full scan run under ~50
 Another option is to use `--id-type=ACTUAL` option with import tools. This should solve the issue but the ids in extract need
 to be sorted in increasing order. (But can be done). This may be the best ... (if we are talking about read-only view).
 
-TODO:
+Othweriwse another option to avoid full scans would be to assign to every node a generic label, e.g. `Node` (in addition to it's actual type label) 
+	and then create index the `node_id` for this label.
 
-- ask what it should be.
+Then all the queries wouild be like:
+
+	MATCH (n:Node {'node_id':some_id}) ....
+
 
 
 ## Web Application configuration

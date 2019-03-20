@@ -3,7 +3,7 @@
 #
 # Extract Paradise Datase from mysql to to csv files and loads them into a neo4j database.
 # 
-# Configuration need to be provided in:
+# Configuration needs to be provided in:
 # `$HOME/.paradise.sh`
 # 
 # The following env variables can be defined:
@@ -56,6 +56,10 @@ fi
 #
 # Process command line opions
 #
+
+SUBSET_MAX_ID=
+ANONYMIZE=
+
 while [ $# -gt 0 ]; do
     case "$1" in
     --neo4j-db-file)
@@ -65,6 +69,9 @@ while [ $# -gt 0 ]; do
     --subset--with-max-id)
       shift
       SUBSET_MAX_ID="$1" #e.g: 59094091
+      ;;
+    --anonymize)
+      ANONYMIZE="YES"
       ;;
     -*)
       fatal_error "unrecognized option: $1"
@@ -76,13 +83,6 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-
-NODE_SUBSET_QUERY=
-EDGE_SUBSET_QUERY=
-if [ -n "${SUBSET_MAX_ID}" ]; then
-  NODE_SUBSET_QUERY="WHERE \`n.node_id\` <= ${SUBSET_MAX_ID}"
-  EDGE_SUBSET_QUERY="WHERE node_1 <= ${SUBSET_MAX_ID} AND node_2 <=${SUBSET_MAX_ID}"
-fi
 
 #
 # Validate and mysql configuation
@@ -122,6 +122,27 @@ info "Extracting data from mysql at '${MYSQL_HOST}' with user '${MYSQL_USER}' to
 
 mkdir -p "${EXPORT_DIR}"
 
+
+#
+# Setup extract queries
+#
+
+NODE_SUBSET_QUERY=
+EDGE_SUBSET_QUERY=
+if [ -n "${SUBSET_MAX_ID}" ]; then
+  info "Subsetting the extact with max node id = ${SUBSET_MAX_ID}"
+  NODE_SUBSET_QUERY="WHERE \`n.node_id\` <= ${SUBSET_MAX_ID}"
+  EDGE_SUBSET_QUERY="WHERE node_1 <= ${SUBSET_MAX_ID} AND node_2 <=${SUBSET_MAX_ID}"
+fi
+
+ADDRESS_QUERY="\`n.address\`"
+NAME_QUERY="\`n.name\`"
+if [ -n "${ANONYMIZE}" ]; then
+  info "Annonymizing the extract ('name' and 'address' fields)"
+  ADDRESS_QUERY="IF(\`n.address\`!='', CONCAT_WS('_','Address',\`n.node_id\`), '') as \`n.address\`"
+  NAME_QUERY="IF(\`n.name\`!='', CONCAT_WS('_','Name',\`n.node_id\`), '') as \`n.name\`"
+fi
+
 #
 # Extract nodes
 #
@@ -138,9 +159,9 @@ info "Extracting ${MYSQL_NODE_COUNT} nodes to: '${NODE_EXTRACT_FILE}'"
 
 sql_run <<SQL
 SELECT 
-    \`n.node_id\`, JSON_UNQUOTE(JSON_EXTRACT(\`labels(n)\`,'\$[0]')),
-    \`n.valid_until\`,\`n.country_codes\`,\`n.countries\`,\`n.sourceID\`,\`n.address\`,
-    \`n.name\`,\`n.jurisdiction_description\`,\`n.service_provider\`,\`n.jurisdiction\`,\`n.closed_date\`,
+    \`n.node_id\`, JSON_UNQUOTE(JSON_EXTRACT(\`labels(n)\`,'\$[0]')),${NAME_QUERY},${ADDRESS_QUERY},
+    \`n.valid_until\`,\`n.country_codes\`,\`n.countries\`,\`n.sourceID\`,
+    \`n.jurisdiction_description\`,\`n.service_provider\`,\`n.jurisdiction\`,\`n.closed_date\`,
     \`n.incorporation_date\`,\`n.ibcRUC\`,\`n.type\`,\`n.status\`,\`n.company_type\`,\`n.note\`
 FROM
    (SELECT * from \`nodes.entity\` 
