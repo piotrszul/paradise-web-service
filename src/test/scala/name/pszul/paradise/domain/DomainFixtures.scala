@@ -6,11 +6,11 @@ package name.pszul.paradise.domain
 object DomainFixtures {
 
   // exising entities
-  val TestEntity_0 = Entity(0L, "TestEntity_0")
-  val TestEntity_1 = Entity(1L, "TestEntity_1")
-  val TestAddress_2 = Entity(2L, "TestAddress_2")
-  val TestPath_1_2 = Path(TestEntity_1, TestAddress_2)
-  val TestPath_2_1 = Path(TestAddress_2, TestEntity_1)
+  val TestEntity_0 = Entity(0L, "Entity", "TestEntity_0")
+  val TestEntity_1 = Entity(1L, "Entity", "TestEntity_1")
+  val TestAddress_2 = Entity(2L, "Address", "TestAddress_2")
+  val TestPath_1_2 = Path(TestEntity_1.toRef, TestAddress_2.toRef)
+  val TestPath_2_1 = Path(TestAddress_2.toRef, TestEntity_1.toRef)
 
   // cypher expression to create fixtures
   val CypherToCreateFixtures = "" +

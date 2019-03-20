@@ -16,6 +16,7 @@ stages:
       status_code: 200
       body:
         id: 34178939
+        clazz: Entity
         name: Name_34178939
 
   - name: Fails with 404 for non exising entity
@@ -43,32 +44,17 @@ stages:
         steps:
           - id: 39041817
             name: Name_39041817
+            clazz: Officer
           - id: 39096152
             name: Name_39096152
+            clazz: Officer
           - id: 39031075
             name: Name_39031075
+            clazz: Entity
           - id: 39172370
             name: Name_39172370
+            clazz: Address
  
-  - name: Finds shortestPath between to entities if exists
-
-    request:
-      url: http://localhost:8888/api/entity/39041817/shortestPath/39172370
-      method: GET
-
-    response:
-      status_code: 200
-      body:
-        steps:
-          - id: 39041817
-            name: Name_39041817
-          - id: 39096152
-            name: Name_39096152
-          - id: 39031075
-            name: Name_39031075
-          - id: 39172370
-            name: Name_39172370
-
   - name: Fails with 404 if a path cannot be found
 
     request:

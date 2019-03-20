@@ -31,7 +31,7 @@ class Neo4jEntityRepository(driver: Driver) extends EntityRepository with Closea
    *
    * @param cypherQuery cyher query to run
    * @param params the map of with query parameters
-   * @mapper the function to map the query result to the expected type
+   * @param mapper the function to map the query result to the expected type
    *
    * @return Some(T) if query returned a single result of None if no result was found.
    */

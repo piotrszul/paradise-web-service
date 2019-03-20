@@ -12,13 +12,16 @@ import org.neo4j.driver.v1.types.Node
 object Mapper {
 
   def toEntity(neo4jNode: Node): Entity = {
-    Entity(neo4jNode.id, neo4jNode.get("name").asString())
+    val labels = neo4jNode.labels.asScala.toList
+    require(labels.size == 1, "We expect exactly one label")
+    val singleLabel = labels.head
+    Entity(neo4jNode.id, singleLabel, neo4jNode.get("name").asString())
   }
 
   def toEntity(value: Value): Entity = toEntity(value.asNode())
 
   def toPath(value: Value): Path = {
     val neo4Path = value.asPath()
-    Path(neo4Path.nodes().asScala.map(toEntity).toList)
+    Path(neo4Path.nodes().asScala.map(toEntity).map(_.toRef).toList)
   }
 }

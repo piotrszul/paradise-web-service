@@ -247,6 +247,7 @@ Prerequisites
 
 To run the tests use:
 
+	sbt package
 	./dev/run_with_compose.sh up
 	# in another terminal
 	./dev/run-it.sh
