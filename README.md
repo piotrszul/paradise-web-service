@@ -78,19 +78,19 @@ Notes:
 
 	GET /entity/:entity_id  -> JSON(entity)
 
-	eg: {"id":9,"class":"Address","properties":{"address":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","closed_date":"","company_type":"","countries":"","country_codes":"","ibcRUC":"","incorporation_date":"","jurisdiction":"","jurisdiction_description":"","name":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","node_id":"59217552","note":"","service_provider":"","sourceID":"Paradise Papers - Malta corporate registry","status":"","type":"","valid_until":"Malta corporate registry data is current through 2016"}}
+	eg: {"id":9,"clazz":"Address","properties":{"address":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","closed_date":"","company_type":"","countries":"","country_codes":"","ibcRUC":"","incorporation_date":"","jurisdiction":"","jurisdiction_description":"","name":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","node_id":"59217552","note":"","service_provider":"","sourceID":"Paradise Papers - Malta corporate registry","status":"","type":"","valid_until":"Malta corporate registry data is current through 2016"}}
 
 
 	GET /entity/:entity_id/shortestPath/:to_entity_id -> JSON(path)
 
-	e.g: {"steps":[{"id":9,"class":"Address","name":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","uri":"http://127.0.0.1:5000/entity/9"},{"id":59242,"class":"Entity","name":"ALA INT. LIMITED","uri":"http://127.0.0.1:5000/entity/59242"},{"id":60201,"class":"Entity","name":"Euroyacht Limited","uri":"http://127.0.0.1:5000/entity/60201"}]}
+	e.g: {"steps":[{"id":9,"clazz":"Address","name":"40, VILLA FAIRHOLME, SIR AUGUSTUS BARTOLO STREET,","uri":"http://127.0.0.1:5000/entity/9"},{"id":59242,"clazz":"Entity","name":"ALA INT. LIMITED","uri":"http://127.0.0.1:5000/entity/59242"},{"id":60201,"clazz":"Entity","name":"Euroyacht Limited","uri":"http://127.0.0.1:5000/entity/60201"}]}
 
 Notes:
 
 - Both endpoints return HTTP 404 if entity/path cannot be found
-- The `entity` resource is defined by it's `id`, `name`, `class` and set of arbitrary `properties`. Here I assume that each node in the graph has only only one label which use as entity's `class`. 
+- The `entity` resource is defined by it's `id`, `name`, `clazz` and set of arbitrary `properties`. Here I assume that each node in the graph has only only one label which use as entity's `class`. 
 - The path response contains a list of entity summaries (not full node) that includes: id, class, name.
-- To make the API nice entity/entity summary responses also include the `uri` to the entity (`"uri":"http://127.0.0.1:5000/entity/60201"`)
+- [Nice to have] To make the API nice entity/entity summary responses also include the `uri` to the entity (`"uri":"http://127.0.0.1:5000/entity/60201"`)
 
 Assumptions:
 
@@ -256,13 +256,15 @@ To run the tests use:
 
 # TOOD, Open issues and tasks
 
-- [TODO] Current implementation does not add `uri` element to `entity` responses
-- [TODO] Current implementation does not add `class` and `properties` elements to `entity responses`
+- [TODO] Current implementation does not add  `properties` elements to `entity responses`
+- [TODO] Current implementation does not add `uri` element to `entity` responses (this can be fixed as in cross-cuttin manner by implementing 
+JacksonJsonSupport.transformResponseBody and using UrlGeneratorSupport see  the spkie code).
+- [TODO] Add more unit test for mapping Neo4j to domain
 - [Issue] Neo4j `shortedPath` does not work if the start and end nodes are the same. Currently API fails with code 500. If finding path between the same 
 node is required (not sure if it's useful) then the implementation can be extended to use alternative query in this 
 case: `MATCH path=(n)-[*..5]-(n) WHERE ID(n)=$ID RETURN path ORDER BY lenght(path) LIMIT 1`. As search for unlimited paths is likely to take a lot of time
 the max length should be constrained (here to 5) possibly with a configurable parameter.
-- [Issue] Neo4j driver is eagerly checks for connectivity to the server. The web app fails to start if the server is not available (and cannot recover from it). It should start and fail on requests, and recover once the server is available. This seem to work if the database becomes unavailable after the driver is initialized (e.g. fails per requests and recovers).
+- [Issue] Neo4j driver is eagerly checks for connectivity to the server. The web app fails to start if the server is not available (and cannot recover from it). It should start and fail on requests, and recover once the server is available. This seem to work if the database becomes unavailable after the driver is initialized (e.g. fails per requests and recovers). The easiest partial fix is to add `lazy` initialization of the driver (on first request). The better one is to wrap it so that it retries creation with some resonable time intervals at request time. 
 - [IDEA] To make to output more useful the `path` resource could include the types of relations as well as nodes in the path, 
 e.g. `{steps: [relType:"address-of", "from":{ "id"... }, "to":{ ...}}, ...]}`
 - [TODO] Add more stringent verification of the ingest by comparing counts of nodes and edges of different typed between mysql and neo4j after ingest
